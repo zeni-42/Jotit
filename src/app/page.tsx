@@ -26,7 +26,7 @@ export default function Home() {
         <h3 className="text-xl text-slate-400 mt-5 px-[30vw] " > A powerful tool to boost your productivity, and improve your efficiency and what can be great than a personalized reminder.</h3>
         <div className="w-full h-14 flex justify-center items-center gap-10 mt-5" >
           <Button onClick={() => router.push('/learn-more')} variant={"secondary"} >Learn More</Button>
-          <Button onClick={() => router.push('/sign-in')}>Get started</Button>
+          <Button onClick={() => router.push('/sign-up')}>Get started</Button>
         </div>
       </div>
     <Bottombar />
