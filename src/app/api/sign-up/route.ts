@@ -35,7 +35,7 @@ export async function POST(req: Request) {
         return ResponseHelper.success(createdUser, "User created successfully", 200)
 
     } catch (error) {
-        console.log("Somthing went wrong in sign-in route");
-        return ResponseHelper.error("Failed to register user", 500, error)
+        console.log("Somthing went wrong in sign-up route");
+        return ResponseHelper.error("Failed to sign-up user", 500, error)
     }
 }

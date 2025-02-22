@@ -9,18 +9,17 @@ import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 
-export default function Signup(){
+export default function Signin(){
     const { register, handleSubmit, reset } = useForm()
     const router = useRouter()
 
     const registerUser = async (data: any) => {
         try {
-            console.log(data);
-            const response = await axios.post('/api/sign-up', data )
+            const response = await axios.post('/api/sign-in', data )
             if (response.status == 200) {
-                toast.success("User registerd")
+                toast.success("Welcome")
                 reset()
-                router.push('/sign-in')
+                router.push('/home')
             }
         } catch (error: any) {
             console.log(error);
@@ -32,14 +31,13 @@ export default function Signup(){
     return(
         <>
         <div className="w-full h-screen flex justify-center items-center ">
-            <div className="w-1/3 h-2/3 rounded-xl border border-zinc-800 flex justify-center items-center flex-col p-10 gap-5" >
-                <h1 className="text-2xl font-semibold" >Create an account</h1>
-                <form onSubmit={handleSubmit(registerUser)} className="w-full h-2/3 flex justify-evenly items-center flex-col " >
-                    <Input autoComplete="off" {...register("fullName", {required: true})} placeholder="Name" type="text" className="w-2/3 h-12" />
+            <div className="w-1/3 h-2/3 rounded-lg border border-zinc-800 flex justify-center items-center flex-col p-10 gap-5" >
+                <h1 className="text-2xl font-semibold" >Login to your account</h1>
+                <form onSubmit={handleSubmit(registerUser)} className="w-full h-1/2 flex justify-evenly items-center flex-col " >
                     <Input autoComplete="off" {...register("email", {required: true})} placeholder="Email" type="email" className="w-2/3 h-12" />
                     <Input autoComplete="off" {...register("password", {required: true} )} placeholder="Password" type="password" className="w-2/3 h-12" />
                     <Button type="submit" className="w-2/3" >Submit </Button>
-                    <h2 className="text-sm text-zinc-500" >Already have an account ? <Link href='/sign-in' className="underline " >Sign-in</Link></h2>
+                    <h2 className="text-sm text-zinc-500" >Don't have an account ? <Link href='/sign-up' className="underline " >Sign-up</Link></h2>
                 </form>
                 <div className="w-full -mt-5 flex justify-center items-center gap-5" >
                     <div className="w-40 bg-zinc-800 h-[1px] "/>
