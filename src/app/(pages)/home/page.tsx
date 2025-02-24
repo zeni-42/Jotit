@@ -1,7 +1,12 @@
+import Sidebar from "@/components/layout/Sidebar";
+
 export default function Home(){
     return (
         <>
-        Home page
+        <Sidebar />
+        <div className="w-4/5 h-screen" >
+            
+        </div>
         </>
     )
 }

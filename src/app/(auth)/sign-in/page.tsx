@@ -20,9 +20,10 @@ export default function Signin(){
                 toast.success("Welcome")
                 reset()
                 router.push('/home')
+                localStorage.setItem("avatar",response.data?.data?.avatar)
+                localStorage.setItem("fullName",response.data?.data?.fullName)
             }
         } catch (error: any) {
-            console.log(error);
             const errorMsg = error.response?.data?.message;
             toast.error(errorMsg)
         }
