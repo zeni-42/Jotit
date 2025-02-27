@@ -20,6 +20,7 @@ export default function Signin(){
                 toast.success("Welcome")
                 reset()
                 router.push('/home')
+                localStorage.setItem("userId", response.data?.data._id)
                 localStorage.setItem("avatar",response.data?.data?.avatar)
                 localStorage.setItem("fullName",response.data?.data?.fullName)
             }

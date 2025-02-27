@@ -1,5 +1,5 @@
 "use client"
-import { Bell, CalendarCheck, CalendarClock, CalendarDays, ChevronRight, CirclePlus, ListTodo, Plus } from "lucide-react";
+import { Bell, BellRing, CalendarCheck, CalendarClock, CalendarDays, ChevronRight, CircleAlert, CirclePlus, ListTodo, Plus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -40,6 +40,7 @@ export default function Sidebar(){
                     <Link href='/home' className="px-2 w-full h-10 flex justify-start items-center gap-2 hover:bg-zinc-800 rounded-lg "><span><ListTodo size={20} strokeWidth={1.5} /></span>All Tasks</Link>
                     <Link href='/today' className="px-2 w-full h-10 flex justify-start items-center gap-2 hover:bg-zinc-800 rounded-lg "><span><CalendarCheck size={20} strokeWidth={1.5} /></span>Today</Link>
                     <Link href='/upcoming' className="px-2 w-full h-10 flex justify-start items-center gap-2 hover:bg-zinc-800 rounded-lg "><span><CalendarClock size={20} strokeWidth={1.5} /></span>Upcoming</Link>
+                    <Link href='/upcoming' className="px-2 w-full h-10 flex justify-start items-center gap-2 hover:bg-zinc-800 rounded-lg "><span><BellRing size={20} strokeWidth={1.5} /></span>Alerts</Link>
                 </section>
             </div>
             <div className="w-full h-16 p-2">

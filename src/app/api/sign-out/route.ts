@@ -1,4 +1,4 @@
-import ResponseHelper from "@/lib/ResponseHelpaer";
+import ResponseHelper from "@/lib/ResponseHelper";
 import { cookies } from "next/headers";
 
 export async function GET() {

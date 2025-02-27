@@ -1,13 +1,11 @@
-import mongoose, { ObjectId, Schema } from "mongoose";
+import mongoose, { ObjectId, Schema, Document } from "mongoose";
 
 interface taskInterface extends Document {
     userId: ObjectId;
-    title: string;
-    description: string;
+    task: string;
     status: 'in progress' | 'pending' | 'completed'
     priority: 'low' | 'medium' | 'high'
-    dueDate: Date;
-    tags: string
+    dueDate?: Date;
 }
 
 const taskSchema:Schema<taskInterface> = new mongoose.Schema({
@@ -16,19 +14,11 @@ const taskSchema:Schema<taskInterface> = new mongoose.Schema({
         ref: "User",
         required: true,
     },
-    title: {
+    task: {
         type: String,
         required: true,
-        unique: true,
         trim: true,
         max: 100,
-    },
-    description: {
-        type: String,
-        required: true,
-        unique: true,
-        trim: true,
-        max: 300,
     },
     status: {
         type: String,
@@ -42,12 +32,6 @@ const taskSchema:Schema<taskInterface> = new mongoose.Schema({
     },
     dueDate: {
         type: Date,
-    },
-    tags: {
-        type: String,
-        unique: true,
-        trim: true,
-        index: true
     }
 }, { timestamps: true }) 
 

@@ -1,5 +1,5 @@
 import { DBconnect } from "@/lib/db"
-import ResponseHelper from "@/lib/ResponseHelpaer"
+import ResponseHelper from "@/lib/ResponseHelper"
 import { User } from "@/models/User.models"
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
