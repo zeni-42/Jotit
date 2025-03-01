@@ -15,7 +15,6 @@ export default function Signup(){
 
     const registerUser = async (data: any) => {
         try {
-            console.log(data);
             const response = await axios.post('/api/sign-up', data )
             if (response.status == 200) {
                 toast.success("User registerd")

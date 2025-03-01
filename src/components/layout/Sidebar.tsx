@@ -1,5 +1,5 @@
 "use client"
-import { Bell, BellRing, CalendarCheck, CalendarClock, CalendarDays, ChevronRight, CircleAlert, CirclePlus, ListTodo, Plus } from "lucide-react";
+import { BellRing, CalendarCheck, CalendarClock, ListTodo, Plus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";

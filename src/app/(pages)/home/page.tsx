@@ -3,7 +3,7 @@ import Sidebar from "@/components/layout/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import axios from "axios";
-import { Calendar, Check, CheckCheck, Pencil, Plus, Settings2, Trash } from "lucide-react";
+import { Calendar, Check, CheckCheck, Plus, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
@@ -85,7 +85,6 @@ export default function Home() {
     const deleteTask = async (taskId: any) => {
         try {
             const res = await axios.delete(`http://localhost:3000/api/delete-task?taskId=${taskId}`)
-            console.log(res);
             if (res.status == 200) {
                 toast.success("Deleted")
                 fetchTasks()
@@ -153,9 +152,15 @@ export default function Home() {
                     }
                     </div>
                     <div className="w-full flex justify-end items-center gap-5" >
-                        <Button variant="link" onClick={() => handlePrevSetOfData() } >Previous</Button>
-                        <div>{page}</div>
-                        <Button variant="link" onClick={() => handleNextSetOfData() } >Next</Button>
+                        { fetchedTask.length > 0 ? (
+                            <>
+                                <Button variant="link" onClick={() => handlePrevSetOfData() } >Previous</Button>
+                                <div>{page}</div>
+                                <Button variant="link" onClick={() => handleNextSetOfData() } >Next</Button>
+                            </>
+                        ): (
+                            <></>
+                        ) }
                     </div>
                 </div>
             </div>
