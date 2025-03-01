@@ -6,6 +6,7 @@ interface taskInterface extends Document {
     status: 'in progress' | 'pending' | 'completed'
     priority: 'low' | 'medium' | 'high'
     dueDate?: Date;
+    isCompleted: boolean
 }
 
 const taskSchema:Schema<taskInterface> = new mongoose.Schema({
@@ -32,6 +33,11 @@ const taskSchema:Schema<taskInterface> = new mongoose.Schema({
     },
     dueDate: {
         type: Date,
+    },
+    isCompleted: { 
+        type: Boolean,
+        required: true,
+        default: false
     }
 }, { timestamps: true }) 
 

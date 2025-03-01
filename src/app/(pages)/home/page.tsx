@@ -3,7 +3,7 @@ import Sidebar from "@/components/layout/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import axios from "axios";
-import { Calendar, Check, Pencil, Plus, Settings2, Trash } from "lucide-react";
+import { Calendar, Check, CheckCheck, Pencil, Plus, Settings2, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
@@ -70,6 +70,35 @@ export default function Home() {
         }
     }
 
+    const updateComplete = async (taskId: any) => {
+        try {
+            const response = await axios.put(`http://localhost:3000/api/update-complete?taskId=${taskId}`)
+            if (response.status == 200) {
+                toast.success("Completed")
+                fetchTasks()
+            }
+        } catch (error) {
+            toast.error("Failed to update")
+        }
+    }
+
+    const deleteTask = async (taskId: any) => {
+        try {
+            const res = await axios.delete(`http://localhost:3000/api/delete-task?taskId=${taskId}`)
+            console.log(res);
+            if (res.status == 200) {
+                toast.success("Deleted")
+                fetchTasks()
+            }
+        } catch (error) {
+            toast.error("!Deleted")
+        }
+    }
+
+    const listCompleted = () => {
+        console.log("Logic");
+    }
+
     useEffect(() => {
         fetchTasks();
     },[])
@@ -90,8 +119,8 @@ export default function Home() {
                             <Button variant="ghost">
                                 <Calendar />
                             </Button>
-                            <Button variant="ghost">
-                                <Settings2 />
+                            <Button variant="ghost" onClick={() => listCompleted()}>
+                                <CheckCheck />
                             </Button>
                         </div>
                     </div>
@@ -105,22 +134,27 @@ export default function Home() {
                                             {index + 1}.
                                         </p>
                                         <p>
-                                            {task.task}
+                                            { task.isCompleted ? (
+                                                <s>{task.task}</s>
+                                            ) : (
+                                                <>{task.task}</>
+                                            ) }
                                         </p>
                                     </div>
                                     <div className="w-1/2 flex justify-end items-center gap-5 ">
-                                        <Button variant="secondary" ><Check /></Button>
-                                        <Button variant="destructive" className="bg-red-700" ><Trash /></Button>
+                                        <Button variant="secondary" onClick={() => updateComplete(task._id)} ><Check /></Button>
+                                        <Button variant="destructive" className="bg-red-700" onClick={() => deleteTask(task._id)} ><Trash /></Button>
                                     </div>
-                                </div>                        
+                                </div>
                             ))
                         ) : (
                             <div>No active task</div>
                         )
                     }
                     </div>
-                    <div className="w-full flex justify-end items-end gap-5" >
-                        <Button variant="link" onClick={() => handlePrevSetOfData() } >Prev</Button>
+                    <div className="w-full flex justify-end items-center gap-5" >
+                        <Button variant="link" onClick={() => handlePrevSetOfData() } >Previous</Button>
+                        <div>{page}</div>
                         <Button variant="link" onClick={() => handleNextSetOfData() } >Next</Button>
                     </div>
                 </div>
