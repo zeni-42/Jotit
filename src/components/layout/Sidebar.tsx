@@ -1,25 +1,21 @@
 "use client"
 import { BellRing, CalendarCheck, CalendarClock, ListTodo, Plus } from "lucide-react";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { motion } from "motion/react"
-import { Toggle } from "@/components/ui/toggle";
 
 export default function Sidebar(){
-    const [storedAvatar, setStoredAvatar] = useState<string | null>(null)
-    const [name, setName] = useState<string | null>(null)
-    const [open, setOpen] = useState(false)
+    const {data} = useSession()
+    const [storedAvatar, setStoredAvatar] = useState<string>("")
+    const [name, setName] = useState<string>("")
 
     useEffect(() => {
-        setStoredAvatar(localStorage.getItem("avatar"))
-        setName(localStorage.getItem("fullName"))
-
-        return (() => {
-            setStoredAvatar(null)
-            setName(null)
-        })
-    },[])
+        if (data?.user) {
+            setName(localStorage.getItem("fullName")! || data.user?.name!)
+            setStoredAvatar(localStorage.getItem("avatar")! || data.user?.image!)
+        }
+    },[data])
 
     return (
         <>
@@ -28,7 +24,7 @@ export default function Sidebar(){
                 <Link href={'/profile'} className="hover:bg-zinc-800 px-3 w-full h-12 rounded-lg flex justify-start items-center gap-3" >
                 {
                     storedAvatar && (
-                        <Image src={storedAvatar} alt="pfp" width={300} height={300} className="w-8 h-8 rounded-lg border border-zinc-100 " />
+                        <Image src={storedAvatar} alt="pfp" width={300} height={300} className="w-9 h-9 rounded-full " />
                     )
                 }
                 <h1>{name}</h1>

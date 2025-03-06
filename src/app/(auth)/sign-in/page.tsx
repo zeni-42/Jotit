@@ -1,9 +1,9 @@
 "use client"
 
+import { SignIn } from "@/components/AuthButton"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import axios from "axios"
-import { DicesIcon, Github } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
@@ -30,6 +30,7 @@ export default function Signin(){
         }
     }
 
+
     return(
         <>
         <div className="w-full h-screen flex justify-center items-center ">
@@ -47,8 +48,7 @@ export default function Signin(){
                     <div className="w-40 bg-zinc-800 h-[1px] "/>
                 </div>
                 <div className="mt-5 w-full flex justify-center items-center text-sm gap-10" >
-                    <Button variant="secondary"><Github /></Button>
-                    <Button variant="secondary" ><DicesIcon /></Button>
+                    <SignIn />
                 </div>
             </div>
         </div>

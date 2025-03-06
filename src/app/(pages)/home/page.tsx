@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 export default function Home() {
+
     const [addForm, setAddForm] = useState(false)
     const [task, setTask] = useState<string>("")
     const [fetchedTask, setFetchedTasks] = useState<any[]>([])
@@ -16,9 +17,9 @@ export default function Home() {
 
     const fetchTasks = async () => {
         const userId = localStorage.getItem("userId")
-        const response = await axios.post('http://localhost:3000/api/get-task', { taskId: "", userId, page })
-        setFetchedTasks(response.data?.data?.data)
-        setMaxPage(response.data?.data?.pagination?.totalPages)
+        // const response = await axios.post('http://localhost:3000/api/get-task', { taskId: "", userId, page })
+        // setFetchedTasks(response.data?.data?.data)
+        // setMaxPage(response.data?.data?.pagination?.totalPages)
     }
 
     const addData = async () => {
