@@ -6,6 +6,7 @@ interface userInterface extends Document {
     password: string,
     avatar: string,
     token: string,
+    usingGithub: boolean
 }
 
 const userSchema:Schema<userInterface> = new mongoose.Schema({
@@ -33,6 +34,9 @@ const userSchema:Schema<userInterface> = new mongoose.Schema({
     },
     token: {
         type: String,
+    },
+    usingGithub: {
+        type: Boolean,
     }
 },  { timestamps: true })
 

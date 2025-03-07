@@ -4,7 +4,7 @@ import { User } from "@/models/User.models"
 import bcrypt from "bcryptjs"
 
 export async function POST(req: Request) {
-    const { fullName, email, password, avatar } = await req.json()
+    const { fullName, email, password } = await req.json()
     if (!fullName || !email) {
         return ResponseHelper.error("All fields are required", 400)
     }
@@ -23,7 +23,6 @@ export async function POST(req: Request) {
             fullName,
             email,
             password: hashedPassword,
-            avatar
         })
 
         const createdUser = await User.findById(user._id).select(

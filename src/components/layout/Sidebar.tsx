@@ -11,6 +11,9 @@ export default function Sidebar(){
     const [name, setName] = useState<string>("")
 
     useEffect(() => {
+        setName(localStorage.getItem("fullName")!)
+        setStoredAvatar(localStorage.getItem("avatar")!)
+
         if (data?.user) {
             setName(data.user?.name! || localStorage.getItem("fullName")!)
             setStoredAvatar(data.user?.image! || localStorage.getItem("avatar")!)

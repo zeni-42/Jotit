@@ -22,23 +22,14 @@ export default function Home() {
             email: data?.user?.email!,
             avatar: data?.user?.image!
         }
-        console.log(newData);
-        // try {
-        //     const response = await axios.post('/api/sign-up', newData )
-        //     if (response.status == 200) {
-        //         console.log("Registerd");
-        //     }
-        // } catch (error) {
-        //     console.log("Somthing went wrong");
-        //     toast.error("failed to save")
-        // }
+        await axios.post('/api/register-github-user', newData)
     }
 
     useEffect( () => {
         if (data?.user) {
             registerGithubUser()
         }
-    } ,[data])
+    } ,[])
 
     const fetchTasks = async () => {
         const userId = localStorage.getItem("userId")
