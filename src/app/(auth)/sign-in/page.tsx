@@ -1,6 +1,6 @@
 "use client"
 
-import { SignIn } from "@/components/AuthButton"
+import GitHubButton from "@/components/GitHubButton"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import axios from "axios"
@@ -48,7 +48,7 @@ export default function Signin(){
                     <div className="w-40 bg-zinc-800 h-[1px] "/>
                 </div>
                 <div className="mt-5 w-full flex justify-center items-center text-sm gap-10" >
-                    <SignIn />
+                    <GitHubButton />
                 </div>
             </div>
         </div>

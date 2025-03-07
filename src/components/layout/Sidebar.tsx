@@ -12,10 +12,11 @@ export default function Sidebar(){
 
     useEffect(() => {
         if (data?.user) {
-            setName(localStorage.getItem("fullName")! || data.user?.name!)
-            setStoredAvatar(localStorage.getItem("avatar")! || data.user?.image!)
+            setName(data.user?.name! || localStorage.getItem("fullName")!)
+            setStoredAvatar(data.user?.image! || localStorage.getItem("avatar")!)
         }
     },[data])
+
 
     return (
         <>

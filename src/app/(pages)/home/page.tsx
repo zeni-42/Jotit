@@ -33,7 +33,6 @@ export default function Home() {
                 fetchTasks()
             }
         } catch (error: any) {
-            console.log(error);
             const errMsg = error.response?.data?.message;
             toast.error(errMsg)
         }
