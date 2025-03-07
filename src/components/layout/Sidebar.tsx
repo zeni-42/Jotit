@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function Sidebar(){
-    const {data} = useSession()
+    const { data } = useSession()
     const [storedAvatar, setStoredAvatar] = useState<string>("")
     const [name, setName] = useState<string>("")
 
@@ -16,7 +16,6 @@ export default function Sidebar(){
             setStoredAvatar(data.user?.image! || localStorage.getItem("avatar")!)
         }
     },[data])
-
 
     return (
         <>

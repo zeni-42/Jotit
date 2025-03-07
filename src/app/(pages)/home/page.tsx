@@ -4,22 +4,47 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import axios from "axios";
 import { Calendar, Check, CheckCheck, Plus, Trash } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 export default function Home() {
-
+    const { data } = useSession()
     const [addForm, setAddForm] = useState(false)
     const [task, setTask] = useState<string>("")
     const [fetchedTask, setFetchedTasks] = useState<any[]>([])
     const [page, setPage] = useState(1)
     const [maxPage, setMaxPage] = useState<number>()
 
+    const registerGithubUser = async () => {
+        const newData = {
+            fullName: data?.user?.name!,
+            email: data?.user?.email!,
+            avatar: data?.user?.image!
+        }
+        console.log(newData);
+        // try {
+        //     const response = await axios.post('/api/sign-up', newData )
+        //     if (response.status == 200) {
+        //         console.log("Registerd");
+        //     }
+        // } catch (error) {
+        //     console.log("Somthing went wrong");
+        //     toast.error("failed to save")
+        // }
+    }
+
+    useEffect( () => {
+        if (data?.user) {
+            registerGithubUser()
+        }
+    } ,[data])
+
     const fetchTasks = async () => {
         const userId = localStorage.getItem("userId")
-        // const response = await axios.post('http://localhost:3000/api/get-task', { taskId: "", userId, page })
-        // setFetchedTasks(response.data?.data?.data)
-        // setMaxPage(response.data?.data?.pagination?.totalPages)
+        const response = await axios.post('http://localhost:3000/api/get-task', { taskId: "", userId, page })
+        setFetchedTasks(response.data?.data?.data)
+        setMaxPage(response.data?.data?.pagination?.totalPages)
     }
 
     const addData = async () => {
@@ -178,7 +203,10 @@ export default function Home() {
                                         <Button variant="outline" ><Calendar /></Button>
                                     </div>
                                     <div className="w-1/2 flex justify-end items-center gap-5">
-                                        <Button variant="secondary" onClick={() => setAddForm(e => !e)} >Cancel</Button>
+                                        <Button variant="secondary" onClick={() => {
+                                                setAddForm(e => !e);
+                                                setTask("")
+                                            }} >Cancel</Button>
                                         <Button onClick={ addData } >Add Task</Button>
                                     </div>
                                 </div>
