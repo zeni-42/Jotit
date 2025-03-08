@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import axios from "axios"
 import { signOut, useSession } from "next-auth/react"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 
@@ -11,21 +12,44 @@ export default function Profile() {
     const { data } = useSession()
     const [userData, setUserData] = useState({})
     const [image, setImage] = useState<string>("")
-    if (data) {
-        setImage(data?.user?.image!)
-    } else {
+    const router = useRouter()
+
+    useEffect(() => {
         setImage(localStorage.getItem('avatar')!)
-    }
+        if (data?.user) {
+            setImage(data?.user?.image!)
+        }
+    },[])
 
     const fetchData = async () => {
         try {
-            const storedUserId = localStorage.getItem("userId")
+            const storedUserId = data?.user ? localStorage.getItem("gitHubUserId") : localStorage.getItem("userId")
             const response = await axios.get(`http://localhost:3000/api/get-user?userId=${storedUserId}`)
             setUserData(response.data?.data)
         } catch (error: any) {
             console.log("Failed to fetch user data");
             const errMsg = error.response?.data?.message;
             toast.error(errMsg)
+        }
+    }
+
+    const handleSignOut = async () => {
+        if (data) {
+            signOut()
+            router.push('/sign-in')
+            return
+        }
+        try {
+            const resposne = await axios.get('/api/sign-out')
+            if (resposne.status == 200) {
+                router.push('/sign-in')
+                localStorage.removeItem("userId")
+                localStorage.removeItem("avatar")
+                localStorage.removeItem("fullName")
+                localStorage.removeItem("email")
+            }
+        } catch (error) {
+            console.log("Sign-out denied");
         }
     }
 
@@ -40,9 +64,31 @@ export default function Profile() {
                 <Sidebar />
             </div>
             <div className="w-4/5" >
-                <div className="w-full h-screen p-4" >
-                    <Image src={image} alt="avatar" width={1000} height={10000} className="w-40 h-40 rounded-full" />
-                    { data ? (<><Button onClick={() => signOut()} >Sign out</Button></>) : <><Button>Sign out</Button></> }
+                <div className="w-full h-screen flex justify-start items-center flex-col gap-5" >
+                    <div className="w-2/3 h-fit flex justify-between items-center py-5 mt-10 border-b border-zinc-800 ">
+                        <div>
+                            <h1 className="text-2xl font-semibold" >{localStorage.getItem("fullName")! || data?.user?.name}</h1>
+                            <p className="text-lg font-normal" >{localStorage.getItem("email")! || data?.user?.email}</p>
+                            <p>{data?.user?.id}</p>
+                        </div>
+                        <div>    
+                            {   image ? (
+                                    <Image src={image} alt="avatar" width={1000} height={1000} className="w-40 h-40 rounded-full" />
+                                ) : (
+                                    <p className="text-gray-500">No Avatar</p>
+                            )}
+                        </div>
+                    </div>
+                    <div className="w-2/3 border-b border-zinc-800">
+                        <h1 className="text-2xl font-semibold" >Account Settings</h1>
+                        <div className="w-full flex justify-between items-center my-5 " >
+                            <p>Password</p>
+                            <Button variant="secondary" disabled={!!data?.user} > Update Password </Button>
+                        </div>
+                    </div>
+                    <div className="w-2/3 flex justify-start items-center" >
+                        <Button variant="secondary" onClick={() => handleSignOut()} >Sign out</Button>
+                    </div>
                 </div>
             </div>
         </div>

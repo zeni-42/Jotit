@@ -16,7 +16,7 @@ export default function Home() {
     const [page, setPage] = useState(1)
     const [maxPage, setMaxPage] = useState<number>()
 
-    const hasRegistered = useRef<boolean>(false)
+    const alreadyRegisted = localStorage.getItem("gitHubUserId")
 
     const registerGithubUser = async () => {
         const newData = {
@@ -26,33 +26,33 @@ export default function Home() {
         }
         try {
             const response = await axios.post('/api/register-github-user', newData)
-            if (response.status == 200) {
-                localStorage.setItem("userId", response.data?.data._id)
-                localStorage.setItem("avatar",response.data?.data?.avatar)
-                localStorage.setItem("fullName",response.data?.data?.fullName)
-            }
+            localStorage.setItem("gitHubUserId", response.data?.data._id)
         } catch (error) {
             console.log();
         }
     }
 
     useEffect( () => {
-        if (data?.user && !hasRegistered.current) {
+        if (data?.user && !alreadyRegisted) {
             registerGithubUser()
-            hasRegistered.current = true
+            fetchTasks()
         }
-    } ,[data])
+    },[])
 
     const fetchTasks = async () => {
-        const userId = localStorage.getItem("userId")
-        const response = await axios.post('http://localhost:3000/api/get-task', { taskId: "", userId, page })
-        setFetchedTasks(response.data?.data?.data)
-        setMaxPage(response.data?.data?.pagination?.totalPages)
+        try {
+            const userId = data?.user ? localStorage.getItem("gitHubUserId")! : localStorage.getItem("userId")!
+            const response = await axios.post('http://localhost:3000/api/get-task', { taskId: "", userId, page })
+            setFetchedTasks(response.data?.data?.data)            
+            setMaxPage(response.data?.data?.pagination?.totalPages)
+        } catch (error) {
+            console.log("Fetching error");
+        }
     }
 
     const addData = async () => {
         try {
-            const userId = localStorage.getItem("userId")
+            const userId = data?.user ? localStorage.getItem("gitHubUserId")! : localStorage.getItem("userId")!
             const response = await axios.post('/api/add-task', { userId, content: task })
             if (response.status == 200) {
                 toast.success("Task added")
@@ -73,7 +73,7 @@ export default function Home() {
         }
         try {
             setPage((page) => page + 1)
-            const userId = localStorage.getItem("userId")
+            const userId = localStorage.getItem("userId") || localStorage.getItem("gitHubUserId")! 
             const nextPage = page + 1
             const response = await axios.post('http://localhost:3000/api/get-task', { taskId: "", userId, page: nextPage })
             setFetchedTasks(response.data?.data?.data)
@@ -127,8 +127,8 @@ export default function Home() {
     }
 
     useEffect(() => {
-        fetchTasks();
-    },[])
+        fetchTasks()
+    },[data])
 
     return (
         <>

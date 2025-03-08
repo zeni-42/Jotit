@@ -23,6 +23,7 @@ export default function Signin(){
                 localStorage.setItem("userId", response.data?.data._id)
                 localStorage.setItem("avatar",response.data?.data?.avatar)
                 localStorage.setItem("fullName",response.data?.data?.fullName)
+                localStorage.setItem("email",response.data?.data?.email)
             }
         } catch (error: any) {
             const errorMsg = error.response?.data?.message;
