@@ -26,7 +26,9 @@ export default function Home() {
         }
         try {
             const response = await axios.post('/api/register-github-user', newData)
-            localStorage.setItem("gitHubUserId", response.data?.data._id)
+            if(response.status == 200 ){
+                localStorage.setItem("gitHubUserId", response.data?.data._id)
+            }
         } catch (error) {
             console.log();
         }
@@ -37,7 +39,7 @@ export default function Home() {
             registerGithubUser()
             fetchTasks()
         }
-    },[])
+    },[data])
 
     const fetchTasks = async () => {
         try {

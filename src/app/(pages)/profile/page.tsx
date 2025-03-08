@@ -10,24 +10,18 @@ import toast from "react-hot-toast"
 
 export default function Profile() {
     const { data } = useSession()
-    const [userData, setUserData] = useState({})
     const [image, setImage] = useState<string>("")
     const router = useRouter()
 
-    useEffect(() => {
-        setImage(localStorage.getItem('avatar')!)
-        if (data?.user) {
-            setImage(data?.user?.image!)
-        }
-    },[])
-
     const fetchData = async () => {
         try {
-            const storedUserId = data?.user ? localStorage.getItem("gitHubUserId") : localStorage.getItem("userId")
+            const storedUserId = localStorage.getItem(data?.user ? "gitHubUserId" : "userId");
+            if (!storedUserId) {
+                return
+            }
             const response = await axios.get(`http://localhost:3000/api/get-user?userId=${storedUserId}`)
-            setUserData(response.data?.data)
+            setImage(response.data?.data?.avatar!)
         } catch (error: any) {
-            console.log("Failed to fetch user data");
             const errMsg = error.response?.data?.message;
             toast.error(errMsg)
         }
@@ -55,7 +49,7 @@ export default function Profile() {
 
     useEffect(() => {
         fetchData()
-    },[])
+    },[data])
 
     return (
         <>
@@ -83,7 +77,11 @@ export default function Profile() {
                         <h1 className="text-2xl font-semibold" >Account Settings</h1>
                         <div className="w-full flex justify-between items-center my-5 " >
                             <p>Password</p>
-                            <Button variant="secondary" disabled={!!data?.user} > Update Password </Button>
+                            <Button variant="secondary" disabled={!!data?.user} > Change Password </Button>
+                        </div>
+                        <div className="w-full flex justify-between items-center my-5 " >
+                            <p>Delete Account</p>
+                            <Button variant="destructive" className="bg-red-700" > Delete Account :( </Button>
                         </div>
                     </div>
                     <div className="w-2/3 flex justify-start items-center" >
