@@ -37,6 +37,7 @@ const userSchema:Schema<userInterface> = new mongoose.Schema({
     },
     usingGithub: {
         type: Boolean,
+        default: false
     }
 },  { timestamps: true })
 

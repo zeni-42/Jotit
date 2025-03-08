@@ -34,7 +34,7 @@ export async function POST(req: Request) {
                 id: user._id,
                 fullName: user.fullName,
                 email: user.email,
-                pass: user.password
+                pass: user.password,
             },
             secret,
             { expiresIn: process.env.TOKEN_EXPIRY }

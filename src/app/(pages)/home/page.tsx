@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import axios from "axios";
 import { Calendar, Check, CheckCheck, Plus, Trash } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 
 export default function Home() {
@@ -16,20 +16,32 @@ export default function Home() {
     const [page, setPage] = useState(1)
     const [maxPage, setMaxPage] = useState<number>()
 
+    const hasRegistered = useRef<boolean>(false)
+
     const registerGithubUser = async () => {
         const newData = {
             fullName: data?.user?.name!,
             email: data?.user?.email!,
             avatar: data?.user?.image!
         }
-        await axios.post('/api/register-github-user', newData)
+        try {
+            const response = await axios.post('/api/register-github-user', newData)
+            if (response.status == 200) {
+                localStorage.setItem("userId", response.data?.data._id)
+                localStorage.setItem("avatar",response.data?.data?.avatar)
+                localStorage.setItem("fullName",response.data?.data?.fullName)
+            }
+        } catch (error) {
+            console.log();
+        }
     }
 
     useEffect( () => {
-        if (data?.user) {
+        if (data?.user && !hasRegistered.current) {
             registerGithubUser()
+            hasRegistered.current = true
         }
-    } ,[])
+    } ,[data])
 
     const fetchTasks = async () => {
         const userId = localStorage.getItem("userId")
