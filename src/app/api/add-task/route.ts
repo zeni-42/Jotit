@@ -1,27 +1,37 @@
 import { DBconnect } from "@/lib/db"
 import ResponseHelper from "@/lib/ResponseHelper"
 import { Task } from "@/models/Task.models"
+import { User } from "@/models/User.models";
 
 export async function POST(req: Request) {
-    const { userId, content, date } = await req.json()
-    if (!userId || !content) {
+    const { userId, title, description, date } = await req.json()
+    if (!userId || !title) {
         return ResponseHelper.error("All data required", 400)
     }    
 
     try {
         await DBconnect()
-        const existingTaskofTheSameUser = await Task.findOne({
-            userId, 
-            task: content
-        })
+
+        const user = await User.findById(userId)
+        if (!user) {
+            return ResponseHelper.error("This user does not exist", 404)
+        }
+
+        const existingTaskofTheSameUser = await Task.findOne(
+            {
+                userId, title, description
+            }
+        )
         if (existingTaskofTheSameUser) {
             return ResponseHelper.error("This task already exist", 460)
         }
 
-        const task = await Task.create({
-            userId,
-            task: content
-        })
+        const taskData: any = { userId, title, description }
+        if (date) {
+            taskData.date = date
+        }
+
+        const task = await Task.create(taskData)
         if (!task) {
             return ResponseHelper.error("Task creation failed", 406)
         }

@@ -5,16 +5,17 @@ import { Input } from "@/components/ui/input";
 import axios from "axios";
 import { Calendar, Check, CheckCheck, Plus, Trash } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { useForm } from "react-hook-form";
 
 export default function Home() {
     const { data } = useSession()
     const [addForm, setAddForm] = useState(false)
-    const [task, setTask] = useState<string>("")
     const [fetchedTask, setFetchedTasks] = useState<any[]>([])
     const [page, setPage] = useState(1)
     const [maxPage, setMaxPage] = useState<number>()
+    const { register, handleSubmit, reset } = useForm()
 
     const alreadyRegisted = localStorage.getItem("gitHubUserId")
 
@@ -34,7 +35,7 @@ export default function Home() {
         }
     }
 
-    useEffect( () => {
+    useEffect(() => {
         if (data?.user && !alreadyRegisted) {
             registerGithubUser()
             fetchTasks()
@@ -44,7 +45,8 @@ export default function Home() {
     const fetchTasks = async () => {
         try {
             const userId = data?.user ? localStorage.getItem("gitHubUserId")! : localStorage.getItem("userId")!
-            const response = await axios.post('http://localhost:3000/api/get-task', { taskId: "", userId, page })
+            const response = await axios.post('api/get-task', { taskId: "", userId, page })
+            console.log(response.data?.data?.data);
             setFetchedTasks(response.data?.data?.data)            
             setMaxPage(response.data?.data?.pagination?.totalPages)
         } catch (error) {
@@ -52,13 +54,14 @@ export default function Home() {
         }
     }
 
-    const addData = async () => {
+    const addData = async (taskData: any) => {
         try {
             const userId = data?.user ? localStorage.getItem("gitHubUserId")! : localStorage.getItem("userId")!
-            const response = await axios.post('/api/add-task', { userId, content: task })
+            taskData.userId = userId
+            const response = await axios.post('/api/add-task', {...taskData})
             if (response.status == 200) {
                 toast.success("Task added")
-                setTask("")
+                reset()
                 setAddForm(false)
                 fetchTasks()
             }
@@ -157,18 +160,27 @@ export default function Home() {
                     {
                         fetchedTask.length > 0 ? (
                             fetchedTask.map((task, index) => (
-                                <div className="text-white w-full h-14 bg-zinc-900 border border-zinc-800 flex justify-start items-center px-5 rounded-lg" key={task._id}>
+                                <div className="text-white w-full h-20 bg-zinc-900 border border-zinc-800 flex justify-start items-center px-5 rounded-lg" key={task._id}>
                                     <div className="w-1/2 flex justify-start items-center gap-5" >
                                         <p>
                                             {index + 1}.
                                         </p>
-                                        <p>
                                             { task.isCompleted ? (
-                                                <s>{task.task}</s>
+                                                <s className="text-xl font-semibold text-zinc-500">{task.title}</s>
                                             ) : (
-                                                <>{task.task}</>
-                                            ) }
-                                        </p>
+                                                <>
+                                                <div className="flex justify-center items-center gap-5" >
+                                                    <h1 className="text-xl font-semibold" >
+                                                        { task.title }
+                                                    </h1>
+                                                    { task.description ? (
+                                                        <>
+                                                            :<p className="text-sm text-zinc-400" >{task.description}</p>
+                                                        </>
+                                                    ) : null}
+                                                </div>
+                                                </>
+                                            )}
                                     </div>
                                     <div className="w-1/2 flex justify-end items-center gap-5 ">
                                         <Button variant="secondary" onClick={() => updateComplete(task._id)} ><Check /></Button>
@@ -198,23 +210,27 @@ export default function Home() {
                 addForm && (
                     <>
                         <div className="fixed top-0 w-full h-screen flex justify-center items-center backdrop-blur-2xl bg-zinc-900/80" >
-                            <div className="w-1/2 h-1/3 bg-zinc-950 border border-zinc-800 rounded-xl fixed top-40 flex justify-center items-center flex-col px-28 gap-5 ">
-                                <div className="w-full h-12 flex justify-evenly items-start flex-col" >
-                                    <h1 className="text-xl font-semibold" >Enter your task</h1>
-                                </div>
-                                    <Input className="h-12" placeholder="eg. Purchase stuff from Medical" value={task} onChange={(e) => setTask(e.target.value)} />
-                                <div className="w-full flex justify-between items-center" >
-                                    <div>
-                                        <Button variant="outline" ><Calendar /></Button>
+                            <div className="w-1/2 h-1/3 bg-zinc-950 border border-zinc-800 rounded-xl fixed top-40 flex justify-center items-center flex-col py-4 px-28 ">
+                                <form action="" onSubmit={handleSubmit(addData)} className="w-full flex flex-col gap-5 justify-evenly items-center">
+                                    <div className="w-full flex justify-start items-center" >
+                                        <h1 className="text-xl font-semibold" >Enter your task</h1>
                                     </div>
-                                    <div className="w-1/2 flex justify-end items-center gap-5">
-                                        <Button variant="secondary" onClick={() => {
+                                    <div className="w-full flex justify-evenfullly items-center flex-col gap-2" >
+                                        <Input className="h-12 w-full" autoComplete="off" placeholder="Enter Title" {...register("title")} />
+                                        <Input className="h-10 w-full" autoComplete="off" placeholder="Enter description" {...register("description")} />
+                                    </div>
+                                    <div className="w-full flex justify-end items-center gap-5" >
+                                        <div className="w-1/2 flex justify-start items-center" >
+                                            <Button variant="secondary" ><Calendar /></Button>
+                                        </div>
+                                        <div className="w-1/2 flex justify-end items-center gap-5" >
+                                            <Button variant="secondary" onClick={() => {
                                                 setAddForm(e => !e);
-                                                setTask("")
                                             }} >Cancel</Button>
-                                        <Button onClick={ addData } >Add Task</Button>
+                                            <Button type="submit" >Add Task</Button>
+                                        </div>
                                     </div>
-                                </div>
+                                </form>
                             </div>
                         </div>
                     </>

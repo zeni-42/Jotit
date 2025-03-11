@@ -2,7 +2,9 @@ import mongoose, { ObjectId, Schema, Document } from "mongoose";
 
 interface taskInterface extends Document {
     userId: ObjectId;
-    task: string;
+    title: string;
+    description: string,
+    subtasks: ObjectId[],
     status: 'in progress' | 'pending' | 'completed'
     priority: 'low' | 'medium' | 'high'
     dueDate?: Date;
@@ -15,7 +17,7 @@ const taskSchema:Schema<taskInterface> = new mongoose.Schema({
         ref: "User",
         required: true,
     },
-    task: {
+    title: {
         type: String,
         required: true,
         trim: true,
@@ -38,7 +40,16 @@ const taskSchema:Schema<taskInterface> = new mongoose.Schema({
         type: Boolean,
         required: true,
         default: false
-    }
+    },
+    description: {
+        type: String,
+        trim: true,
+        max: 300,
+    },
+    subtasks: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Task"
+    }]
 }, { timestamps: true }) 
 
 export const Task = mongoose.models.Task as mongoose.Model<taskInterface> ||  mongoose.model<taskInterface>("Task", taskSchema)
