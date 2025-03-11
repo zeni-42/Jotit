@@ -51,6 +51,18 @@ export default function Profile() {
         fetchData()
     },[data])
 
+    const handleDeleteAccount = async () => {
+        const userId = localStorage.getItem("userId")
+        try {
+            const response = await axios.delete(`/api/delete-account?userId=${userId}`);
+            if (response.status == 200) {
+                toast.success("Soon!")
+            }
+        } catch (error) {
+            toast.error("Failed :)")
+        }
+    }
+
     return (
         <>
         <div className="flex h-screen">
@@ -81,7 +93,7 @@ export default function Profile() {
                         </div>
                         <div className="w-full flex justify-between items-center my-5 " >
                             <p>Delete Account</p>
-                            <Button variant="destructive" className="bg-red-700" > Delete Account :( </Button>
+                            <Button variant="destructive" className="bg-red-700" disabled={!!data?.user} onClick={() => handleDeleteAccount()} > Delete Account :( </Button>
                         </div>
                     </div>
                     <div className="w-2/3 flex justify-start items-center" >
