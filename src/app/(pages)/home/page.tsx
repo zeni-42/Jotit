@@ -8,6 +8,7 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useForm } from "react-hook-form";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function Home() {
     const { data } = useSession()
@@ -15,6 +16,7 @@ export default function Home() {
     const [fetchedTask, setFetchedTasks] = useState<any[]>([])
     const [page, setPage] = useState(1)
     const [maxPage, setMaxPage] = useState<number>()
+    const [priority, setPriority] = useState("medium")
     const { register, handleSubmit, reset } = useForm()
 
     const alreadyRegisted = localStorage.getItem("gitHubUserId")
@@ -46,7 +48,6 @@ export default function Home() {
         try {
             const userId = data?.user ? localStorage.getItem("gitHubUserId")! : localStorage.getItem("userId")!
             const response = await axios.post('api/get-task', { taskId: "", userId, page })
-            console.log(response.data?.data?.data);
             setFetchedTasks(response.data?.data?.data)            
             setMaxPage(response.data?.data?.pagination?.totalPages)
         } catch (error) {
@@ -55,9 +56,13 @@ export default function Home() {
     }
 
     const addData = async (taskData: any) => {
+        console.log(taskData);
         try {
             const userId = data?.user ? localStorage.getItem("gitHubUserId")! : localStorage.getItem("userId")!
+            const formattedDate = new Date(taskData?.date!).getTime();
+            taskData.date = formattedDate
             taskData.userId = userId
+            taskData.priority = priority
             const response = await axios.post('/api/add-task', {...taskData})
             if (response.status == 200) {
                 toast.success("Task added")
@@ -159,12 +164,9 @@ export default function Home() {
                     <div className="w-full h-[85vh] flex justify-start items-center flex-col gap-5" >
                     {
                         fetchedTask.length > 0 ? (
-                            fetchedTask.map((task, index) => (
+                            fetchedTask.map((task) => (
                                 <div className="text-white w-full h-20 bg-zinc-900 border border-zinc-800 flex justify-start items-center px-5 rounded-lg" key={task._id}>
                                     <div className="w-1/2 flex justify-start items-center gap-5" >
-                                        <p>
-                                            {index + 1}.
-                                        </p>
                                             { task.isCompleted ? (
                                                 <s className="text-xl font-semibold text-zinc-500">{task.title}</s>
                                             ) : (
@@ -219,9 +221,26 @@ export default function Home() {
                                         <Input className="h-12 w-full" autoComplete="off" placeholder="Enter Title" {...register("title")} />
                                         <Input className="h-10 w-full" autoComplete="off" placeholder="Enter description" {...register("description")} />
                                     </div>
-                                    <div className="w-full flex justify-end items-center gap-5" >
-                                        <div className="w-1/2 flex justify-start items-center" >
-                                            <Button variant="secondary" ><Calendar /></Button>
+                                    <div className="w-full flex justify-end items-center gap-5">
+                                        <div className="w-1/2 flex justify-start items-center gap-5" >
+                                            <div>
+                                                <Input placeholder="Deadline" type="date" {...register("date")} />
+                                            </div>
+                                            <div className="w-32" >
+                                                <Select value={priority} onValueChange={setPriority}  >
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Select Priority" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectGroup>
+                                                            <SelectLabel>Priority</SelectLabel>
+                                                            <SelectItem value="high">High</SelectItem>
+                                                            <SelectItem value="medium" >Mid</SelectItem>
+                                                            <SelectItem value="low" >Low</SelectItem>
+                                                        </SelectGroup>
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
                                         </div>
                                         <div className="w-1/2 flex justify-end items-center gap-5" >
                                             <Button variant="secondary" onClick={() => {

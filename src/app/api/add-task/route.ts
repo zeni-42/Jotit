@@ -4,7 +4,7 @@ import { Task } from "@/models/Task.models"
 import { User } from "@/models/User.models";
 
 export async function POST(req: Request) {
-    const { userId, title, description, date } = await req.json()
+    const { userId, title, description, date, priority} = await req.json()
     if (!userId || !title) {
         return ResponseHelper.error("All data required", 400)
     }    
@@ -27,8 +27,13 @@ export async function POST(req: Request) {
         }
 
         const taskData: any = { userId, title, description }
+
         if (date) {
-            taskData.date = date
+            taskData.dueDate = date
+        }
+
+        if(priority){
+            taskData.priority = priority
         }
 
         const task = await Task.create(taskData)
