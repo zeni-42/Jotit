@@ -85,7 +85,7 @@ export default function Home() {
             setPage((page) => page + 1)
             const userId = localStorage.getItem("userId") || localStorage.getItem("gitHubUserId")! 
             const nextPage = page + 1
-            const response = await axios.post('http://localhost:3000/api/get-task', { taskId: "", userId, page: nextPage })
+            const response = await axios.post('/api/get-task', { taskId: "", userId, page: nextPage })
             setFetchedTasks(response.data?.data?.data)
         } catch (error) {
             console.log("Failed");
@@ -101,7 +101,7 @@ export default function Home() {
             setPage((page) => page -1 )
             const userId = localStorage.getItem("userId")
             const prevPage = page - 1
-            const response = await axios.post('http://localhost:3000/api/get-task', { taskId: "", userId, page: prevPage })
+            const response = await axios.post('/api/get-task', { taskId: "", userId, page: prevPage })
             setFetchedTasks(response.data?.data?.data)
         } catch (error) {
             console.log("Failed");
@@ -110,7 +110,7 @@ export default function Home() {
 
     const updateComplete = async (taskId: any) => {
         try {
-            const response = await axios.put(`http://localhost:3000/api/update-complete?taskId=${taskId}`)
+            const response = await axios.put(`/api/update-complete?taskId=${taskId}`)
             if (response.status == 200) {
                 toast.success("Completed")
                 fetchTasks()
@@ -122,7 +122,7 @@ export default function Home() {
 
     const deleteTask = async (taskId: any) => {
         try {
-            const res = await axios.delete(`http://localhost:3000/api/delete-task?taskId=${taskId}`)
+            const res = await axios.delete(`/api/delete-task?taskId=${taskId}`)
             if (res.status == 200) {
                 toast.success("Deleted")
                 fetchTasks()
@@ -177,7 +177,7 @@ export default function Home() {
                                                     </h1>
                                                     { task.description ? (
                                                         <>
-                                                            :<p className="text-sm text-zinc-400" >{task.description}</p>
+                                                            <p className="text-sm text-zinc-400" >({task.description})</p>
                                                         </>
                                                     ) : null}
                                                 </div>

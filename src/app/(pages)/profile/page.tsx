@@ -1,17 +1,22 @@
 "use client"
 import Sidebar from "@/components/layout/Sidebar"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import axios from "axios"
 import { signOut, useSession } from "next-auth/react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
+import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 
 export default function Profile() {
     const { data } = useSession()
     const [image, setImage] = useState<string>("")
     const router = useRouter()
+    const [changePass, setChangePass] = useState(false);
+    const [sure, setSure] = useState(false)
+    const { register, handleSubmit, reset } = useForm()
 
     const fetchData = async () => {
         try {
@@ -19,7 +24,7 @@ export default function Profile() {
             if (!storedUserId) {
                 return
             }
-            const response = await axios.get(`http://localhost:3000/api/get-user?userId=${storedUserId}`)
+            const response = await axios.get(`/api/get-user?userId=${storedUserId}`)
             setImage(response.data?.data?.avatar!)
         } catch (error: any) {
             const errMsg = error.response?.data?.message;
@@ -47,6 +52,38 @@ export default function Profile() {
         }
     }
 
+    const handleChangePassword = async (data: any) => {
+        if (!data.oldPass || !data.newPass || !data.cnfPass) {
+            toast.error("All fields are required")
+        }
+
+        if (data.oldPass == data.newPass) {
+            toast.error("New password cannot be same as old password")
+        }
+
+        if (data.newPass !== data.cnfPass) {
+            toast.error("New Password does not match")
+        }
+
+        try {
+            const userId = localStorage.getItem('userId')
+            if (!userId) {
+                return;
+            }
+            const response = await axios.put(`/api/update-password?userId=${userId}&oldPass=${data.oldPass}&newPass=${data.cnfPass}`)
+            if (response.status == 200) {
+                toast.success("Password updated");
+                reset()
+                setChangePass((prev) => !prev)
+            }
+        } catch (error: any) {
+            const errorMsg = error.response?.data?.message;
+            toast.error(errorMsg)
+        } finally {
+            reset()
+        }
+    }
+
     useEffect(() => {
         fetchData()
     },[data])
@@ -56,7 +93,8 @@ export default function Profile() {
         try {
             const response = await axios.delete(`/api/delete-account?userId=${userId}`);
             if (response.status == 200) {
-                toast.success("Soon!")
+                toast.success("Soon!");
+                router.push('/sign-up')
             }
         } catch (error) {
             toast.error("Failed :)")
@@ -89,11 +127,11 @@ export default function Profile() {
                         <h1 className="text-2xl font-semibold" >Account Settings</h1>
                         <div className="w-full flex justify-between items-center my-5 " >
                             <p>Password</p>
-                            <Button variant="secondary" disabled={!!data?.user} > Change Password </Button>
+                            <Button onClick={() => setChangePass((prev) => !prev)} variant="secondary" disabled={!!data?.user} > Change Password </Button>
                         </div>
                         <div className="w-full flex justify-between items-center my-5 " >
                             <p>Delete Account</p>
-                            <Button variant="destructive" className="bg-red-700" disabled={!!data?.user} onClick={() => handleDeleteAccount()} > Delete Account :( </Button>
+                            <Button variant="destructive" className="bg-red-700" disabled={!!data?.user} onClick={() => setSure((e) => !e )} > Delete Account :( </Button>
                         </div>
                     </div>
                     <div className="w-2/3 flex justify-start items-center" >
@@ -102,6 +140,41 @@ export default function Profile() {
                 </div>
             </div>
         </div>
+        {
+            changePass && (
+                <>
+                <div className="fixed top-0 w-full h-screen backdrop-blur-2xl flex justify-center items-center" >
+                    <div className="w-1/3 h-1/2 rounded-xl bg-black shadow-xl">
+                        <form action="" className="w-full h-full flex justify-center items-center flex-col gap-5" >
+                            <h1 className="text-2xl font-semibold">Update your password</h1>
+                            <Input {...register("oldPass")} autoComplete="off" placeholder="Old Password" className="w-4/5 h-12 " />
+                            <Input {...register("newPass")} autoComplete="off" placeholder="New Password" className="w-4/5 h-12 " />
+                            <Input {...register("cnfPass")} autoComplete="off" placeholder="Confirm Password" className="w-4/5 h-12 " />
+                            <div className="w-full flex justify-center items-center gap-10" >
+                                <Button variant="secondary" className="w-40 h-10" onClick={() => setChangePass((prev) => !prev)} > Cancel </Button>
+                                <Button type="submit" className="w-40 h-10" onClick={handleSubmit(handleChangePassword)} > Update </Button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                </>
+            )
+        }
+        {
+            sure && (
+                <>
+                <div className="w-full h-screen backdrop-blur-2xl fixed top-0 flex justify-center items-center" >
+                    <div className="w-1/3 h-1/3 rounded-xl bg-black shadow-xl flex justify-center items-center flex-col gap-10">
+                        <h1>Are you sure want to delete you account ?</h1>
+                        <div className="w-full flex justify-center items-center gap-10" >
+                            <Button variant="secondary" className="w-40 h-10" onClick={() => setSure((prev) => !prev)} > Cancel </Button>
+                            <Button variant="destructive" type="submit" className="w-40 h-10 bg-red-700" onClick={() => handleDeleteAccount()} > Delete </Button>
+                        </div>
+                    </div>
+                </div>
+                </>
+            )
+        }
         </>
     )
 }
